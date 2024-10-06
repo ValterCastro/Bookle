@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
         crossorigin="anonymous"></script>
@@ -15,10 +16,35 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
+
+    <style>
+        .book-title,
+        .book-description {
+            height: 3.5vw;
+
+            display: -webkit-box;
+
+            -webkit-box-orient: vertical;
+
+            -webkit-line-clamp: 2;
+
+            overflow: hidden;
+
+            text-overflow: ellipsis;
+
+            max-height: 6vw;
+
+        }
+
+        .book-description {            
+            overflow: auto;
+        }
+    </style>
+
 </head>
 
 <body>
-    <div>
+    <div style="padding:1%;">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div style="display:flex;align-items:center;">
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
@@ -38,27 +64,25 @@
             </div>
         </nav>
     </div>
-    <div style=" margin:0;
-                display:flex;
-                height:100vh;
-                align-items:center; width: 55vw;
-                margin: 0 auto;
-                overflow: auto;
-                flex-direction: column;
-                justify-content: center;
-                
-                    ">
-        <div style="">
-            <h1>Bookle</h1>
-        </div>
-        <div style=" ">
-            <form action="{{route('search')}}" method="POST" style="display: flex; justify-content: center"
-                class="form-inline my-2 my-lg-0">
-                @csrf
-                <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">
-                <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-            </form>
-        </div>
+    <div>
+        @if(count($books) > 0)
+            <div style="display: flex;text-align:center;flex-wrap:wrap;">
+                @foreach($books as $book)
+                    <div style="width:20%;margin:1vw;padding:2vw;">
+                        <p class="book-title">{{ $book['title'] }}</p>
+                        <img style="height:10vw;"src={{$book['image_url']}} alt="Image Description">
+                        <p style="margin:0;">Nº ratings:{{$book['ratings_count']}}</p>
+                        <div class="container mt-1">
+                            <?php        for ($i = 1; $i <= 5; $i++): ?>
+                            <i
+                                class="<?php            echo $i <= intval(floatval($book['average_rating'])) ? 'fas fa-star text-warning' : 'far fa-star'; ?>"></i>
+                            <?php        endfor; ?>
+                        </div>
+                        <p class="book-description">{{$book['description']}}</p>
+                    </div>
+                @endforeach
+            </div>
+        @endif
     </div>
 </body>
 
