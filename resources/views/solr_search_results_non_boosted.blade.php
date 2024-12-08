@@ -7,40 +7,39 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
         integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-        crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-        crossorigin="anonymous"></script>
-
     <style>
-        .book-title,
-        .book-description {
-            height: 3.5vw;
-
-            display: -webkit-box;
-
-            -webkit-box-orient: vertical;
-
-            -webkit-line-clamp: 2;
-
-            overflow: hidden;
-
-            text-overflow: ellipsis;
-
-            max-height: 6vw;
-
+        /* Style for the book list */
+        .book-list {
+            list-style: none; /* Remove bullet points */
+            padding: 0;
+            margin: 0;
         }
 
-        .book-description {            
-            overflow: auto;
+        .book-item {
+            margin-bottom: 20px; /* Space between books */
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ddd; /* Separator between items */
+        }
+
+        .book-item h3 {
+            font-size: 18px;
+            margin: 0;
+        }
+
+        .book-item a {
+            color: #1a0dab; /* Google-like link color */
+            text-decoration: none;
+        }
+
+        .book-item a:hover {
+            text-decoration: underline; /* Underline on hover */
+        }
+
+        .book-meta {
+            color: #70757a; /* Subtle gray for metadata */
+            font-size: 14px;
         }
     </style>
-
 </head>
 
 <body>
@@ -53,11 +52,10 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item active mx-3">
-                            <a href="{{route('home')}}">Home <span class="sr-only">(current)</span></a>
+                            <a href="{{ route('home') }}">Home <span class="sr-only">(current)</span></a>
                         </li>
                     </ul>
                 </div>
@@ -65,15 +63,17 @@
         </nav>
     </div>
     <div>
-        @if(count($books) > 0)
-            <div style="display: flex;text-align:center;flex-wrap:wrap;">
-                @foreach($books as $book)
-                    <div style="width:20%;margin:1vw;padding:2vw;">
-                        <p class="book-title">{{ $book['title'] }}</p> 
-                        
-                    </div>
+        @if (count($books) > 0)
+            <ul class="book-list">
+                @foreach ($books as $book)
+                    <li class="book-item">
+                        <!-- Book title -->
+                        <h3><a href="#">{{ $book['title'] }}</a></h3>
+                    </li>
                 @endforeach
-            </div>
+            </ul>
+        @else
+            <p>No books found for your query.</p>
         @endif
     </div>
 </body>
