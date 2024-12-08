@@ -1,10 +1,15 @@
 <?php
 
 namespace App\Http\Controllers;
+//require '../../vendor/autoload.php';
 
 use Illuminate\Http\Request;
-use GuzzleHttp\Client;
+//use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
+//use App\Http\Controllers\Exception;
+use Solarium\Client;
+use Solarium\Core\Client\Adapter\Curl;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 
 
 class SearchController
@@ -110,11 +115,87 @@ class SearchController
         if (count($books) > 0) {
             // Store titles in the session
             session(['books' => $books]);
-    
+
             // Redirect to the search results view
             return redirect()->route('search_results');
         } else {
             return response()->json(['error' => 'No books found.'], 404);
         }
+    }
+
+    public function searchSolr(Request $request)
+    {
+        try {
+
+            $searchTerm = $request->input('search');
+
+            $eventDispatcher = new EventDispatcher();
+
+            // Create the Adapter
+            $adapter = new Curl();
+            // Configure Solarium client
+            $config = [
+                'endpoint' => [
+                    'localhost' => [
+                        'host' => 'solr_pri', // Change to your Solr host
+                        'port' => '8983',      // Change to your Solr port
+                        'path' => '/',     // Change if Solr is under a different path
+                        'core' => 'books',   // Replace with your Solr core name
+                    ],
+                ],
+            ];
+
+            $client = new Client($adapter, $eventDispatcher, $config);
+
+            // Create a query instance
+            $query = $client->createSelect();
+
+            $query->addParam("defType", 'edismax');
+
+            $query->addParam("qf", array('description', 'review_text', 'title'));
+
+
+            //"books politics religion crimes impact social evolution"
+            $query->setQuery($searchTerm);
+
+            // Specify the fields to return in the response (similar to 'fl' in Solr)
+            $query->setFields(fields: array('isbn', 'average_rating', 'ratings_count', 'title', 'genres', 'description', 'score', 'author_name', 'review_text'));
+
+            $query->setStart(0); // Start at the first document
+
+            // Set the number of rows to return
+            $query->setRows(10);
+
+
+            $resultSet = $client->select($query);
+
+            echo "Results found: " . $resultSet->getNumFound() . "\n";
+
+            foreach ($resultSet as $document) {
+                echo "Document ID: " . $document->id . "\n";
+
+                // Output other fields dynamically
+                foreach ($document as $field => $value) {
+                    // Check if the value is an array
+                    if (is_array($value)) {
+                        // If it's an array, print its contents using print_r or json_encode
+                        echo "$field: " . json_encode($value) . "\n";
+                    } else {
+                        // If it's not an array, just print the value normally
+                        echo "$field: $value\n";
+                    }
+                }
+                echo "\n";
+            }
+
+            session(['books' => $resultSet]);
+
+            return redirect()->route('solr_search_results_non_boosted');
+
+        } catch (\Exception $e) {
+            echo "Error: " . $e->getMessage();
+        }
+
+        
     }
 }

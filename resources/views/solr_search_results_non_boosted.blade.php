@@ -69,16 +69,8 @@
             <div style="display: flex;text-align:center;flex-wrap:wrap;">
                 @foreach($books as $book)
                     <div style="width:20%;margin:1vw;padding:2vw;">
-                        <p class="book-title">{{ $book['title'] }}</p>
-                        <img style="height:10vw;" src="{{$book['image_url']}}" alt="Image Description">
-                        <p style="margin:0;">Nº ratings:{{$book['ratings_count']}}</p>
-                        <div class="container mt-1">
-                            <?php        for ($i = 1; $i <= 5; $i++): ?>
-                            <i
-                                class="<?php            echo $i <= intval(floatval($book['average_rating'])) ? 'fas fa-star text-warning' : 'far fa-star'; ?>"></i>
-                            <?php        endfor; ?>
-                        </div>
-                        <p class="book-description">{{$book['description']}}</p>
+                        <p class="book-title">{{ $book['title'] }}</p> 
+                        
                     </div>
                 @endforeach
             </div>
